@@ -1,0 +1,327 @@
+{
+  "invoices": [
+    {
+      "id": "49b3059b-b099-4883-bc01-bd39afa177ae",
+      "name": "INV-2022/0001",
+      "number": "INV-2022/0001",
+      "partner": {
+        "id": "03d7e9f4-a23b-488d-9724-baaaf0e747c1",
+        "name": "Partner 1",
+        "active": true,
+        "type": "customer",
+        "vatnumber": "HU12345678",
+        "bankAccounts": [
+          {
+            "id": "02d7c709-6188-457c-b8c8-ed158eba05a3",
+            "accountNumber": "12345678-12345678-12345678",
+            "bank": "OTP Bank",
+            "label": "OTP Bank",
+            "currency": "HUF"
+          }
+        ],
+        "paymentTherm": "10",
+        "paymentMethod": "transfer",
+        "currency": "HUF",
+        "languages": "hun",
+        "addresses": [
+          {
+            "id": "dac29e62-73dc-4460-a655-1d90f44438f4",
+            "active": true,
+            "street": "Ady Endre u.",
+            "zip": "1234",
+            "city": "Budapest",
+            "country": "Hungary",
+            "type": "main"
+          }
+        ]
+      },
+      "invoiceDate": "2022-01-15",
+      "deliveryDate": "2022-01-15",
+      "dueDate": "2022-01-25",
+      "paymentTherm": "10",
+      "paymentMode": "transfer",
+      "currency": "HUF",
+      "exchangeRate": 1,
+      "invoiceLanguage": "hungarian",
+      "netAmount": 1000,
+      "vatAmount": 270,
+      "totalAmount": 1270,
+      "rounding": 0,
+      "invoiceLines": [
+        {
+          "id": 1,
+          "label": "Asztal",
+          "quantity": 1,
+          "uom": {
+            "id": 1,
+            "name": "db"
+          },
+          "unitPrice": 1000,
+          "taxes": [
+            {
+              "id": 1,
+              "name": "27%",
+              "category": "vat",
+              "active": true,
+              "type": "sale",
+              "scope": "item",
+              "computation": "percentage",
+              "amount": 0.27,
+              "label": "27%",
+              "included": false
+            }
+          ],
+          "taxAmount": 270,
+          "netAmount": 1000,
+          "total": 1270,
+          "note": "",
+          "product": {
+            "id": 1,
+            "name": "Asztal, fekete, 120x100",
+            "active": true,
+            "type": "product",
+            "internalref": "ASZT-153518",
+            "unitprice": 1000,
+            "saletaxes": [
+              {
+                "id": 1,
+                "name": "27%",
+                "category": "vat",
+                "active": true,
+                "type": "sale",
+                "scope": "item",
+                "computation": "percentage",
+                "amount": 0.27,
+                "label": "27%",
+                "included": false
+              }
+            ],
+            "purchasetaxes": [
+              {
+                "id": 1,
+                "name": "27%",
+                "category": "vat",
+                "active": true,
+                "type": "sale",
+                "scope": "item",
+                "computation": "percentage",
+                "amount": 0.27,
+                "label": "27%",
+                "included": false
+              }
+            ],
+            "uom": {
+              "id": 1,
+              "name": "db"
+            },
+            "note": ""
+          }
+        }
+      ]
+    }
+  ],
+  "partners": [
+    {
+      "id": "03d7e9f4-a23b-488d-9724-baaaf0e747c1",
+      "name": "Partner 1",
+      "label": "Partner 1",
+      "active": true,
+      "type": "customer",
+      "vatnumber": "HU12345678",
+      "bankAccounts": [
+        {
+          "id": "02d7c709-6188-457c-b8c8-ed158eba05a3",
+          "accountNumber": "12345678-12345678-12345678",
+          "bank": "OTP Bank",
+          "label": "OTP Bank - 12345678-12345678-12345678",
+          "currency": "HUF"
+        }
+      ],
+      "paymentTherm": "10",
+      "paymentMethod": "transfer",
+      "currency": "HUF",
+      "languages": "hun",
+      "addresses": [
+        {
+          "id": "dac29e62-73dc-4460-a655-1d90f44438f4",
+          "active": true,
+          "street": "Ady Endre u.",
+          "zip": "1234",
+          "city": "Budapest",
+          "country": "Hungary",
+          "type": "main"
+        }
+      ]
+    },
+    {
+      "id": "006eb6c5-da68-480c-b1b7-2f9654e7a307",
+      "name": "Partner 2",
+      "label": "Partner 2",
+      "active": true,
+      "type": "customer",
+      "vatnumber": "HU12345677",
+      "bankAccounts": [
+        {
+          "id": "e4e0aa43-3f32-4a72-9f36-bae71d003c4a",
+          "accountNumber": "11770000-11223344-66778899",
+          "bank": "K&H Bank",
+          "label": "KH Bank",
+          "currency": "HUF"
+        }
+      ],
+      "paymentTherm": "0",
+      "paymentMethod": "cash",
+      "currency": "HUF",
+      "languages": "hun",
+      "addresses": [
+        {
+          "id": "c4567034-90ea-4b61-9037-14cb9777214a",
+          "active": true,
+          "street": "József Attila u.",
+          "zip": "1234",
+          "city": "Budapest",
+          "country": "Hungary",
+          "type": "main"
+        }
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "id": "92e44249-3eed-4ab0-adf5-0cde86d3de46",
+      "label": "Hungarian",
+      "name": "hungarian",
+      "shortCode": "hu"
+    },
+    {
+      "id": "a7bade91-8d20-4b73-9357-91cdf6601e3e",
+      "label": "English",
+      "name": "english",
+      "shortCode": "en"
+    },
+    {
+      "id": "6b1e03c1-0ca1-4d91-b880-0ea2a9d1d8d8",
+      "label": "German",
+      "name": "german",
+      "shortCode": "ger"
+    }
+  ],
+  "currencies": [
+    {
+      "id": "8aef1b83-0494-410a-9506-510a1eedfbdc",
+      "label": "HUF",
+      "name": "Forint",
+      "symbol": "Ft",
+      "rates": [
+        {
+          "date": "2022-01-01",
+          "exchange": 1
+        }
+      ]
+    },
+    {
+      "id": "8aef1b83-0494-410a-9506-510a1eedfbdc",
+      "label": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "rates": [
+        {
+          "date": "2022-01-01",
+          "exchange": 365.11
+        }
+      ]
+    },
+    {
+      "id": "43fc6600-d111-47fd-abb9-27341686a2d3",
+      "label": "USD",
+      "name": "USA Dollar",
+      "symbol": "$",
+      "rates": [
+        {
+          "date": "2022-01-01",
+          "exchange": 315.11
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "ab528c70-e3c2-446d-9fda-2a4066ac5e8d",
+      "name": "Asztal, fekete, 120x100",
+      "label": "Asztal, fekete, 120x100",
+      "active": true,
+      "type": "product",
+      "internalref": "ASZT-153518",
+      "unitprice": 1000,
+      "saletaxes": [
+        {
+          "id": "01e7188b-553a-40b8-9e57-bd6d84ddf873"
+        }
+      ],
+      "purchasetaxes": [
+        {
+          "id": "01e7188b-553a-40b8-9e57-bd6d84ddf873"
+        }
+      ],
+      "uom": {
+        "id": "fc91465d-40c5-455e-9306-c6d150d8df1d"
+      },
+      "note": ""
+    },
+    {
+      "id": "93c8f154-d02f-4ca6-ba6f-42eb613de40a",
+      "name": "Szék, barna",
+      "label": "Szék, barna",
+      "active": true,
+      "type": "product",
+      "internalref": "SZK-ddfasdf",
+      "unitprice": 650,
+      "saletaxes": [
+        {
+          "id": "5e3305af-4214-449c-a7e4-3d8ca2406a93"
+        }
+      ],
+      "purchasetaxes": [
+        {
+          "id": "5e3305af-4214-449c-a7e4-3d8ca2406a93"
+        }
+      ],
+      "uom": {
+        "id": "fc91465d-40c5-455e-9306-c6d150d8df1d"
+      },
+      "note": ""
+    }
+  ],
+  "taxes": [
+    {
+      "id": "01e7188b-553a-40b8-9e57-bd6d84ddf873",
+      "name": "27%",
+      "category": "vat",
+      "active": true,
+      "type": "sale",
+      "scope": "item",
+      "computation": "percentage",
+      "amount": 0.27,
+      "label": "27%",
+      "included": false
+    },
+    {
+      "id": "5e3305af-4214-449c-a7e4-3d8ca2406a93",
+      "name": "20%",
+      "category": "vat",
+      "active": true,
+      "type": "sale",
+      "scope": "item",
+      "computation": "percentage",
+      "amount": 0.2,
+      "label": "20%",
+      "included": false
+    }
+  ],
+  "uoms": [
+    {
+      "id": "fc91465d-40c5-455e-9306-c6d150d8df1d",
+      "name": "db"
+    }
+  ]
+}
