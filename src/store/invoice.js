@@ -1,33 +1,25 @@
 import data from "./data.json";
-import { v4 as uuid } from "uuid";
+import { getUomById } from "./uom";
+import { getTaxById } from "./taxes";
+import { getProductById } from "./product";
+import { getPartnerById } from "./partner";
+import { getLangById } from "./language";
+import { getCurrencyById } from "./currency";
+import { getBankAccountById } from "./bank";
 
 export function getInvoices() {
-  return data.invoices;
+  return data.invoices.map(inv => getInvoiceById(inv.id));
 }
 
 export function getInvoiceById(id) {
-  return data.invoices.find(inv => inv.id == id);
-}
-
-export function getEmptyInvoice() {
+  const invoice = data.invoices.find(inv => inv.id === id);
   return {
-    id: uuid(),
-    name: "",
-    number: "",
-    partner: {},
-    invoiceDate: null,
-    deliveryDate: null,
-    dueDate: null,
-    paymentTherm: null,
-    paymentMode: "",
-    currency: "",
-    exchangeRate: 1,
-    invoiceLanguage: "hungarian",
-    netAmount: 0,
-    vatAmount: 0,
-    totalAmount: 0,
-    rounding: 0,
-    invoiceLines: []
+    ...invoice,
+    partnerId: getPartnerById(invoice.partnerId),
+    currencyId: getCurrencyById(invoice.currencyId),
+    invoiceLangId: getLangById(invoice.invoiceLangId),
+    invoiceLines: getInvoiceLinesByInvoice(invoice.id),
+    invoiceBankId: getBankAccountById(invoice.id)
   }
 }
 
@@ -50,4 +42,24 @@ function pad(num, size) {
   num = num.toString();
   while (num.length < size) num = "0" + num;
   return num;
+}
+
+/**************** Invoice Lines *************************/
+export function getInvoiceLines() {
+  return data.invoicelines.map(l => getInvoiceLineById(l.id));
+}
+
+export function getInvoiceLinesByInvoice(invoiceId) {
+  const found = data.invoicelines.filter(line => line.invoiceId === invoiceId);
+  return found.map(f => getInvoiceLineById(f.id));
+}
+
+export function getInvoiceLineById(id) {
+  const found = data.invoicelines.find(line => line.id === id);
+  return {
+    ...found,
+    uomId: getUomById(found.uomId),
+    taxesIds: found.taxesIds.map(id => getTaxById(id)),
+    productId:  getProductById(found.productId)
+  }
 }
