@@ -24,10 +24,10 @@
     <div class="row items-center">
       <div class="col-3">Address</div>
       <div class="col-9">
-        {{ selectedPartner.addresses[0].country }},
-        {{ selectedPartner.addresses[0].zip }}
-        {{ selectedPartner.addresses[0].city }},
-        {{ selectedPartner.addresses[0].street }}
+        {{ selectedPartner.addressIds[0].country }},
+        {{ selectedPartner.addressIds[0].zip }}
+        {{ selectedPartner.addressIds[0].city }},
+        {{ selectedPartner.addressIds[0].street }}
       </div>
     </div>
     <div class="row items-center">
@@ -38,7 +38,7 @@
           dense
           ref="bankSelect"
           :readonly="!editable"
-          :options="selectedPartner.bankAccounts"
+          :options="selectedPartner.bankAccountIds"
           v-model="selectedBank"
           :rules="[(val) => !!val || 'Please select a Bank Account']"
           lazy-rules="ondemand"
@@ -76,7 +76,7 @@ const onChangePartner = () => {
   selectedBank.value =
     selectedPartner.value == null
       ? null
-      : selectedPartner.value.bankAccounts[0];
+      : selectedPartner.value.bankAccountIds[0];
 
   updatePartner(selectedPartner);
   updateBank(selectedBank);

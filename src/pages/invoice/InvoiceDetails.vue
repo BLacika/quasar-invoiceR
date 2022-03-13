@@ -48,32 +48,32 @@
               <tbody>
                 <tr>
                   <th class="text-left">Partner</th>
-                  <td class="text-subtitle1">{{ invoice.partner.name }}</td>
+                  <td class="text-subtitle1">{{ invoice.partnerId.label }}</td>
                 </tr>
                 <tr>
                   <th class="text-left">VAT</th>
-                  <td class="text-subtitle1">{{ invoice.partner.vatnumber }}</td>
+                  <td class="text-subtitle1">{{ invoice.partnerId.vatnumber }}</td>
                 </tr>
                 <tr>
                   <th class="text-left">Address</th>
                   <td class="text-subtitle1">
-                    {{ invoice.partner.addresses[0].country }},
-                    {{ invoice.partner.addresses[0].zip }}
-                    {{ invoice.partner.addresses[0].city }},
-                    {{ invoice.partner.addresses[0].street }}
-                    </td>
+                    {{ invoice.partnerId.addressIds[0].country }},
+                    {{ invoice.partnerId.addressIds[0].zip }}
+                    {{ invoice.partnerId.addressIds[0].city }},
+                    {{ invoice.partnerId.addressIds[0].street }}
+                  </td>
                 </tr>
                 <tr>
                   <th class="text-left">Invoice Language</th>
                   <td class="text-subtitle1">
-                    {{ invoice.invoiceLanguage }}
-                    </td>
+                    {{ invoice.invoiceLangId.label }}
+                  </td>
                 </tr>
                 <tr>
                   <th class="text-left">Bank Account</th>
                   <td class="text-subtitle1">
-                    {{ invoice.partner.bankAccounts[0].label }},
-                    {{ invoice.partner.bankAccounts[0].accountNumber }}
+                    {{ invoice.partnerId.bankAccountIds[0].label }},
+                    {{ invoice.partnerId.bankAccountIds[0].accountNumber }}
                     </td>
                 </tr>
               </tbody>
@@ -102,7 +102,7 @@
                   </tr>
                   <tr>
                     <th class="text-left">Currency</th>
-                    <td class="text-subtitle1">{{ invoice.currency }}</td>
+                    <td class="text-subtitle1">{{ invoice.currencyId.label }}</td>
                   </tr>
                   <tr v-if="invoice.exchangeRate != 1">
                     <th class="text-left">Rate</th>
@@ -129,14 +129,14 @@
             <tr v-for="(line, index) in invoice.invoiceLines" :key="line.id">
               <th class="text-center">{{ index + 1 }}</th>
               <td class="text-left">{{ line.label }}</td>
-              <td class="text-right">{{ line.quantity }} {{ line.uom.name }}</td>
-              <td class="text-right">{{ line.unitPrice }}</td>
-              <td class="text-right">{{ line.netAmount }}</td>
+              <td class="text-right">{{ line.quantity.toLocaleString('hu-HU') }} {{ line.uomId.name }}</td>
+              <td class="text-right">{{ line.unitPrice.toLocaleString('hu-HU') }}</td>
+              <td class="text-right">{{ line.netAmount.toLocaleString('hu-HU') }}</td>
               <td class="text-right">
-                <span v-for="tax in line.taxes" :key="tax.id">{{ tax.label }}</span>
+                <span v-for="tax in line.taxesIds" :key="tax.id">{{ tax.label }}</span>
               </td>
-              <td class="text-right">{{ line.taxAmount }}</td>
-              <td class="text-right">{{ line.total }}</td>
+              <td class="text-right">{{ line.taxAmount.toLocaleString('hu-HU') }}</td>
+              <td class="text-right">{{ line.total.toLocaleString('hu-HU') }}</td>
             </tr>
           </tbody>
         </q-markup-table>
@@ -149,23 +149,23 @@
           <q-markup-table flat separator="none">
             <tr>
               <th class="text-right">Rounding</th>
-              <td class="text-right">{{ invoice.rounding }} Ft</td>
+              <td class="text-right">{{ invoice.rounding }} <span>{{ invoice.currencyId.symbol }}</span></td>
             </tr>
             <tr>
               <th class="text-right">Exchange Rate</th>
-              <td class="text-right">{{ invoice.exchangeRate }} Ft</td>
+              <td class="text-right">{{ invoice.exchangeRate }} <span>{{ invoice.currencyId.symbol }}</span></td>
             </tr>
             <tr>
               <th class="text-right">Net Amount</th>
-              <td class="text-right">{{ invoice.netAmount }} Ft</td>
+              <td class="text-right">{{ invoice.netAmount.toLocaleString('hu-HU') }} <span>{{ invoice.currencyId.symbol }}</span></td>
             </tr>
             <tr>
               <th class="text-right">VAT Amount - 27%</th>
-              <td class="text-right">{{ invoice.vatAmount }} Ft</td>
+              <td class="text-right">{{ invoice.vatAmount.toLocaleString('hu-HU') }} <span>{{ invoice.currencyId.symbol }}</span></td>
             </tr>
             <tr>
               <th class="text-right">Total Amount</th>
-              <td class="text-right">{{ invoice.totalAmount }} Ft</td>
+              <td class="text-right">{{ invoice.totalAmount.toLocaleString('hu-HU') }} <span>{{ invoice.currencyId.symbol }}</span></td>
             </tr>
           </q-markup-table>
         </q-card>
@@ -207,8 +207,8 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from "vue";
+<script setup>
+import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { getInvoiceById } from "../../store/invoice";
 import { getPartnersByType } from "../../store/partner";
@@ -229,52 +229,48 @@ const messages = [
   },
 ]
 
-export default defineComponent({
-  name: "PageInvoiceDetails",
-  setup() {
-    const route = useRoute();
-    const invoiceId = computed(() => route.params.id);
-    const invoice = getInvoiceById(invoiceId.value);
-    const editor = ref("");
+const route = useRoute();
+const invoiceId = computed(() => route.params.id);
+const invoice = getInvoiceById(invoiceId.value);
+const editor = ref("");
+const partner = ref(null);
+const partnerBank = ref(null);
+const newMessage = ref(false);
 
-    return {
-      invoice,
-      partner: ref(null),
-      partnerBank: ref(null),
-      messages,
-      newMessage: ref(false),
-      editor,
-      addMessage() {
-        let newMsg = {
-          id: uuid(),
-          content: editor.value,
-          uploader: "Lacika",
-          uploaded: new Date().toLocaleString()
-        }
-        messages.unshift(newMsg);
-        editor.value = "";
-      },
-      onItemClick() {
-        alert("Clicked!");
-      },
-      filterFn(val, update) {
-        if (val === "") {
-          update(() => {
-            customerPartners.value = getPartnersByType("customer");
-          });
-          return;
-        }
+onMounted(() => {
+  console.log('invoice', invoice)
+})
 
-        update(() => {
-          const needle = val.toLowerCase();
-          customerPartners.value = getPartnersByType("customer").filter(
-            (p) => p.name.toLowerCase().indexOf(needle) > -1
-          );
-        });
-      },
-    };
-  },
-});
+const addMessage = () => {
+  let newMsg = {
+    id: uuid(),
+    content: editor.value,
+    uploader: "Lacika",
+    uploaded: new Date().toLocaleString()
+  }
+  messages.unshift(newMsg);
+  editor.value = "";
+}
+
+const onItemClick = () => {
+  alert("Clicked!");
+}
+
+const filterFn = (val, update) => {
+  if (val === "") {
+    update(() => {
+      customerPartners.value = getPartnersByType("customer");
+    });
+    return;
+  }
+
+  update(() => {
+    const needle = val.toLowerCase();
+    customerPartners.value = getPartnersByType("customer").filter(
+      (p) => p.name.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
 </script>
 
 <style></style>

@@ -32,48 +32,21 @@
         style="min-width: 150px"
       />
     </template>
-    <template v-slot:body="props">
-      <q-tr :props="props">
-        <q-td key="product" :props="props">
-          {{ props.row.product.label }}
-          <q-popup-edit v-model="props.row.product.label" v-slot="scope">
-            <q-select v-model="scope.value" :options="getProducts()" dense autofocus />
-          </q-popup-edit>
-        </q-td>
-        <q-td key="description" :props="props">
-          {{ props.row.description }}
-          <q-popup-edit v-model="props.row.description" v-slot="scope">
-            <q-input v-model="scope.value" dense autofocus />
-          </q-popup-edit>
-        </q-td>
-        <q-td key="quantity" :props="props">
-          {{ props.row.quantity }}
-          <q-popup-edit v-model="props.row.quantity" v-slot="scope">
-            <q-input type="number" v-model.number="scope.value" dense autofocus />
-          </q-popup-edit>
-        </q-td>
-        <q-td key="uom" :props="props">
-          {{ props.row.uom }}
-          <q-popup-edit v-model="props.row.uom" v-slot="scope">
-            <q-input v-model="scope.value" dense autofocus />
-          </q-popup-edit>
-        </q-td>
-        <q-td key="unitPrice" :props="props">
-          {{ props.row.unitPrice }}
-          <q-popup-edit v-model="props.row.unitPrice" v-slot="scope">
-            <q-input type="number" v-model.number="scope.value" dense autofocus />
-          </q-popup-edit>
-        </q-td>
-      </q-tr>
-    </template>
   </q-table>
 
-  <pre>{{ rows }}</pre>
+  <invoice-line-dialog
+    :title="dialogTitle"
+    :show="showDialog"
+    @update:show="(newValue) => showDialog = newValue"
+  >
+  </invoice-line-dialog>
+
 </template>
 
 <script setup>
 import { ref, reactive } from "vue";
 import { getProducts } from "src/store/product";
+import InvoiceLineDialog from "./InvoiceLineDialog.vue";
 
 const columns = [
   {
@@ -180,6 +153,15 @@ const visibleColumns = ref([
 
 const loading = ref(false);
 const filter = ref("");
+const showDialog = ref(false);
+const dialogTitle = ref("");
 
-const onAddBtn = () => {};
+const onAddBtn = () => {
+  dialogTitle.value = "Add new line"
+  showDialog.value = true;
+};
+
+const handleRowSelect = (event, row, index) => {
+  console.log
+}
 </script>

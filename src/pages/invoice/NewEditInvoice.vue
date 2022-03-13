@@ -40,12 +40,13 @@
             <partner-select
               ref="partnerSelect"
               :editable="editable"
-              @updatePartner="selectedPartner = $event.value"
-              @updateBank="selectedBank = $event.value"
+              @updatePartner="state.partnerId = $event.value"
+              @updateBank="state.invoiceBankId = $event.value"
             ></partner-select>
             <language-select
               ref="languageSelect"
-              @updateLanguage="selectedLang = $event.value"
+              :language="state.invoiceLangId"
+              @update:language="(newValue) => state.invoiceLangId = newValue"
               :editable="editable"
             ></language-select>
           </q-card-section>
@@ -125,16 +126,16 @@
       <invoice-lines></invoice-lines>
     </div>
     <div class="q-pa-sm shadow-2">
-      <pre>{{ newInvoice }}</pre>
+      <pre>{{ state }}</pre>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import { date } from "quasar";
-import { getEmptyInvoice } from "../../store/invoice";
 import { getCurrencies } from "../../store/currency";
+import { v4 as uuid } from "uuid";
 
 import PartnerSelect from "../../components/PartnerSelect.vue";
 import LanguageSelect from "../../components/LanguageSelect.vue";
@@ -142,7 +143,6 @@ import DateInvoice from "../../components/DateInvoice.vue";
 import PaymentMethod from "../../components/PaymentMethod.vue";
 import InvoiceLines from "../../components/InvoiceLines.vue";
 
-const newInvoice = ref(null);
 const editable = ref(true);
 const currencies = ref(null);
 
@@ -168,8 +168,17 @@ const timeStamp = Date.now();
 const formattedString = date.formatDate(timeStamp, "YYYY-MM-DD");
 const terms = [0, 1, 5, 8, 10, 15, 20, 30];
 
+const state = reactive({
+  id: uuid(),
+  name: "",
+  number: "",
+  partnerId: "",
+  invoiceDate: "",
+  invoiceLangId: "",
+  invoiceBankId: ""
+})
+
 onMounted(() => {
-  newInvoice.value = getEmptyInvoice();
   currencies.value = getCurrencies();
   invoiceDate.value = formattedString;
   deliveryDate.value = formattedString;

@@ -9,7 +9,6 @@
         ref="langSelect"
         :readonly="!props.editable"
         :options="languages"
-        @update:model-value="onChangeLanguage"
         v-model="selectedLang"
         :rules="[(val) => !!val || 'Please select a Language']"
         lazy-rules="ondemand"
@@ -19,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getLanguages } from "../store/language";
 
 const props = defineProps({
@@ -28,26 +27,29 @@ const props = defineProps({
     required: false,
     default: true,
   },
+  language: {
+    type: String,
+    required: true
+  }
 });
 
-const emit = defineEmits(["updateLanguage"]);
+const emit = defineEmits(["update:language"]);
 
 const languages = ref(null);
 const langSelect = ref(null);
-const selectedLang = ref(null);
+const selectedLang = computed({
+  get() {
+    return props.language
+  },
+  set(val) {
+    emit("update:language", val);
+  }
+})
 
 onMounted(() => {
   languages.value = getLanguages();
   selectedLang.value = languages.value.find((l) => l.shortCode == "hu");
 });
-
-const onChangeLanguage = () => {
-  updateLanguage(selectedLang);
-};
-
-const updateLanguage = (val) => {
-  emit("updateLanguage", val);
-}
 
 const isValid = () => {
   return langSelect.value.validate();
