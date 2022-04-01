@@ -133,6 +133,18 @@
         @modifyLine="onModifyLine($event)"
       >
       </invoice-lines>
+      <div class="row q-gutter-xs q-mt-sm justify-end">
+        <q-card bordered class="col-6">
+          <q-card-section>
+            <rounding
+              :editable="editable"
+              v-model="state.rounding"
+            >
+            </rounding>
+          </q-card-section>
+        </q-card>
+
+      </div>
     </div>
     <div class="q-pa-sm shadow-2">
       <pre>{{ state }}</pre>
@@ -151,6 +163,7 @@ import LanguageSelect from "../../components/LanguageSelect.vue";
 import DateInvoice from "../../components/DateInvoice.vue";
 import PaymentMethod from "../../components/PaymentMethod.vue";
 import InvoiceLines from "../../components/InvoiceLines.vue";
+import Rounding from "../../components/Rounding.vue";
 
 const editable = ref(true);
 const currencies = ref(null);
