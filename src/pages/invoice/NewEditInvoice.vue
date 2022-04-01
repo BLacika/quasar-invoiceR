@@ -40,8 +40,10 @@
             <partner-select
               ref="partnerSelect"
               :editable="editable"
-              @updatePartner="state.partnerId = $event.value"
-              @updateBank="state.invoiceBankId = $event.value"
+              :partner="state.partnerId"
+              @update:partner="(newValue) => onChangePartner(newValue)"
+              :bank="state.invoiceBankId"
+              @update:bank="(newValue) => state.invoiceBankId = newValue"
             ></partner-select>
             <language-select
               ref="languageSelect"
@@ -57,16 +59,16 @@
               ref="dateField"
               label="Date"
               :editable="editable"
-              v-model="invoiceDate"
-              @updateDate="invoiceDate = $event.value"
+              v-model="state.invoiceDate"
+              @updateDate="state.invoiceDate = $event.value"
               @update:model-value="onChangeInvoiceDate"
             ></date-invoice>
             <date-invoice
               ref="deliveryDateField"
               label="Delivery Date"
               :editable="editable"
-              v-model="deliveryDate"
-              @updateDate="deliveryDate = $event.value"
+              v-model="state.deliveryDate"
+              @updateDate="state.deliveryDate = $event.value"
             ></date-invoice>
             <div class="row items-center q-gutter-sm">
               <div class="col-3">Payment Term</div>
@@ -77,7 +79,7 @@
                   dense
                   :readonly="!editable"
                   :options="terms"
-                  v-model="selectedTerm"
+                  v-model="state.paymentTherm"
                   @update:model-value="onChangeTerm"
                 />
               </div>
@@ -85,7 +87,7 @@
                 <date-invoice
                   ref="dueDateField"
                   :editable="editable"
-                  v-model="dueDate"
+                  v-model="state.dueDate"
                 >
                 </date-invoice>
               </div>
@@ -93,7 +95,8 @@
             <payment-method
               ref="paymentMethodField"
               :editable="editable"
-              @updatePaymentMethod="selectedPaymentMode = $event.value"
+              v-model="state.paymentMode"
+              @update:model-value="(newValue) => state.paymentMode = newValue"
             >
             </payment-method>
             <div class="row items-center q-gutter-sm">
@@ -104,7 +107,7 @@
                   dense
                   :readonly="!editable"
                   :options="currencies"
-                  v-model="selectedCurr"
+                  v-model="state.currencyId"
                   @update:model-value="onChangeCurrency"
                 />
               </div>
@@ -114,7 +117,7 @@
                   clearable
                   dense
                   readonly
-                  v-model="currentRate"
+                  v-model="state.exchangeRate"
                 />
               </div>
             </div>
@@ -123,7 +126,13 @@
       </div>
     </div>
     <div class="q-pa-sm shadow-2">
-      <invoice-lines></invoice-lines>
+      <invoice-lines
+        :invoiceId="state.id"
+        :lines="state.invoiceLines"
+        @addNewLine="onAddNewLine($event)"
+        @modifyLine="onModifyLine($event)"
+      >
+      </invoice-lines>
     </div>
     <div class="q-pa-sm shadow-2">
       <pre>{{ state }}</pre>
@@ -147,21 +156,11 @@ const editable = ref(true);
 const currencies = ref(null);
 
 const partnerSelect = ref(null);
-const selectedPartner = ref(null);
-const selectedBank = ref(null);
 const languageSelect = ref(null);
-const selectedLang = ref(null);
 const dateField = ref(null);
-const invoiceDate = ref(null);
 const deliveryDateField = ref(null);
-const deliveryDate = ref(null);
-const dueDate = ref(null);
 const dueDateField = ref(null);
-const selectedTerm = ref(null);
 const paymentMethodField = ref(null);
-const selectedPaymentMode = ref(null);
-const selectedCurr = ref(null);
-const currentRate = ref(1);
 const invoiceLines = ref([]);
 
 const timeStamp = Date.now();
@@ -175,22 +174,32 @@ const state = reactive({
   partnerId: "",
   invoiceDate: "",
   invoiceLangId: "",
-  invoiceBankId: ""
+  invoiceBankId: "",
+  currencyId: "",
+  exchangeRate: 1,
+  netAmount: 0,
+  vatAmount: 0,
+  totalAmount: 0,
+  rounding: 0,
+  invoiceLines: [],
+  paymentTherm: 0,
+  dueDate: "",
+  paymentMode: ""
 })
 
 onMounted(() => {
   currencies.value = getCurrencies();
-  invoiceDate.value = formattedString;
-  deliveryDate.value = formattedString;
-  selectedCurr.value = currencies.value[0];
+  state.invoiceDate = formattedString;
+  state.deliveryDate = formattedString;
+  state.currencyId = currencies.value[0];
   onChangeCurrency();
 });
 
 const onChangeTerm = () => {
-  if (invoiceDate.value && selectedTerm.value) {
-    const newDate = new Date(invoiceDate.value);
-    newDate.setDate(newDate.getDate() + selectedTerm.value);
-    dueDate.value = date.formatDate(newDate, "YYYY-MM-DD");
+  if (state.invoiceDate !== "") {
+    const newDate = new Date(state.invoiceDate);
+    newDate.setDate(newDate.getDate() + state.paymentTherm);
+    state.dueDate = date.formatDate(newDate, "YYYY-MM-DD");
   }
 }
 
@@ -199,7 +208,7 @@ const onChangeInvoiceDate = () => {
 }
 
 const onChangeCurrency = () => {
-  currentRate.value = selectedCurr.value.rates[0].exchange;
+  state.exchangeRate = state.currencyId.rates[0].exchange;
 };
 
 const hasAnyError = () => {
@@ -219,4 +228,17 @@ const onEditSave = () => {
     editable.value = !editable.value;
   }
 };
+
+const onAddNewLine = (event) => {
+  const newLine = JSON.parse(event);
+  state.invoiceLines.push(newLine);
+}
+
+const onModifyLine = (event) => {
+  const modifiedLine = JSON.parse(event);
+  const lineIndex = state.invoiceLines.findIndex(l => l.id === modifiedLine.id);
+  if (lineIndex >= 0) {
+    state.invoiceLines[lineIndex] = modifiedLine;
+  }
+}
 </script>

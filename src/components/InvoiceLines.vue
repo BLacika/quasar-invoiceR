@@ -38,15 +38,19 @@
     :title="dialogTitle"
     :show="showDialog"
     @update:show="(newValue) => showDialog = newValue"
+    :line="selectedLine"
+    @onAddNewLine="addNewLine($event)"
+    :edit="editLine"
+    @onModifyLine="modifyLine($event)"
   >
   </invoice-line-dialog>
 
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { getProducts } from "src/store/product";
+import { ref, computed, reactive } from "vue";
 import InvoiceLineDialog from "./InvoiceLineDialog.vue";
+import { v4 as uuid } from "uuid";
 
 const columns = [
   {
@@ -54,14 +58,14 @@ const columns = [
     required: true,
     label: "Product",
     align: "left",
-    field: (row) => row.product,
+    field: (row) => row.productId,
     format: (val) => `${val.label}`,
     sortable: true,
   },
   {
-    name: "description",
+    name: "label",
     label: "Description",
-    field: "description",
+    field: "label",
     sortable: true,
   },
   {
@@ -71,9 +75,9 @@ const columns = [
     sortable: true,
   },
   {
-    name: "uom",
+    name: "uomId",
     label: "Unit of Measure",
-    field: "uom",
+    field: "uomId",
     sortable: true,
   },
   {
@@ -93,14 +97,14 @@ const columns = [
   {
     name: "taxes",
     label: "Taxes",
-    field: (row) => row.taxes,
-    format: (val) => `${val.map((v) => v.display)}`,
+    field: (row) => row.taxesIds,
+    format: (val) => `${val.map((v) => v.label)}`,
     sortable: true,
   },
   {
     name: "taxAmount",
     label: "Tax Amount",
-    field: "taxesAmount",
+    field: "taxAmount",
     sortable: true,
     format: (val) => `${val.toLocaleString("hu-HU")}`,
   },
@@ -113,35 +117,16 @@ const columns = [
   },
 ];
 
-let rows = reactive([
-  {
-    product: {
-      id: "ab528c70-e3c2-446d-9fda-2a4066ac5e8d",
-      name: "Asztal, fekete, 120x100",
-      label: "Asztal, fekete, 120x100",
-      active: true,
-      type: "product",
-      internalref: "ASZT-153518",
-      unitprice: 1000,
-      saletaxes: [{ id: "01e7188b-553a-40b8-9e57-bd6d84ddf873" }],
-      purchasetaxes: [{ id: "01e7188b-553a-40b8-9e57-bd6d84ddf873" }],
-      uom: { id: "fc91465d-40c5-455e-9306-c6d150d8df1d" },
-      note: "",
-    },
-    description: "[ASZT-153518] Asztal, fekete, 120x100",
-    quantity: 10,
-    uom: "db",
-    unitPrice: 1000,
-    netAmount: 10000,
-    taxes: ["01e7188b-553a-40b8-9e57-bd6d84ddf873"],
-    taxesAmount: 2700,
-    total: 12700,
-  },
-]);
+// const rows = reactive(props.lines);
+const rows = computed({
+  get() {
+    return props.lines;
+  }
+})
 
 const visibleColumns = ref([
   "product",
-  "description",
+  "label",
   "quantity",
   "uom",
   "unitPrice",
@@ -151,17 +136,77 @@ const visibleColumns = ref([
   "total",
 ]);
 
+const props = defineProps({
+  invoiceId: {
+    type: String,
+    required: true
+  },
+  lines: {
+    type: Array,
+    required: true
+  }
+})
+const emit = defineEmits(["addNewLine", "modifyLine"])
+
 const loading = ref(false);
 const filter = ref("");
 const showDialog = ref(false);
+const editLine = ref(false);
 const dialogTitle = ref("");
+const selectedLine = reactive({
+  id: uuid(),
+  invoiceId: props.invoiceId,
+  productId: "",
+  label: "",
+  quantity: 0,
+  uomId: "",
+  unitPrice: 0,
+  taxesIds: [],
+  taxAmount: 0,
+  netAmount: 0,
+  total: 0
+});
 
 const onAddBtn = () => {
-  dialogTitle.value = "Add new line"
+  dialogTitle.value = "Add new line";
+  editLine.value = false;
+  selectedLine.id = uuid();
+  selectedLine.invoiceId = props.invoiceId;
+  selectedLine.productId = "";
+  selectedLine.label = "";
+  selectedLine.quantity = 0;
+  selectedLine.uomId = "";
+  selectedLine.unitPrice = 0;
+  selectedLine.taxesIds = [];
+  selectedLine.taxAmount = 0;
+  selectedLine.netAmount = 0;
+  selectedLine.total = 0;
   showDialog.value = true;
 };
 
 const handleRowSelect = (event, row, index) => {
-  console.log
+  dialogTitle.value = "Modify line"
+  selectedLine.id = row.id;
+  selectedLine.invoiceId = row.invoiceId;
+  selectedLine.productId = row.productId;
+  selectedLine.label = row.label;
+  selectedLine.quantity = row.quantity;
+  selectedLine.uomId = row.uomId;
+  selectedLine.unitPrice = row.unitPrice;
+  selectedLine.taxesIds = row.taxesIds;
+  selectedLine.taxAmount = row.taxAmount;
+  selectedLine.netAmount = row.netAmount;
+  selectedLine.total = row.total;
+  editLine.value = true;
+  showDialog.value = true;
 }
+
+const addNewLine = (event) => {
+  emit("addNewLine", event);
+}
+
+const modifyLine = (event) => {
+  emit("modifyLine", event);
+}
+
 </script>
