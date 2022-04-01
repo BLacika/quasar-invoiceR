@@ -7,7 +7,6 @@ export function getBankAccounts() {
 
 export function getBankAccountById(id) {
   const acc = data.bankAccounts.find(item => item.id === id);
-  // console.log('acc', acc)
   return {
     ...acc,
     currencyId: getCurrencyById(acc.currencyId)
