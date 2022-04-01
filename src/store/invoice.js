@@ -19,7 +19,7 @@ export function getInvoiceById(id) {
     currencyId: getCurrencyById(invoice.currencyId),
     invoiceLangId: getLangById(invoice.invoiceLangId),
     invoiceLines: getInvoiceLinesByInvoice(invoice.id),
-    invoiceBankId: getBankAccountById(invoice.id)
+    invoiceBankId: getBankAccountById(invoice.invoiceBankId)
   }
 }
 
