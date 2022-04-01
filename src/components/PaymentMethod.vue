@@ -18,23 +18,30 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {ref, computed} from "vue";
 
 const paymentModes = ["transfer", "credit", "card", "cash", "voucher"];
-const selectedPaymentMode = ref(null);
+const selectedPaymentMode = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(val) {
+    emit("update:model-value", val);
+  }
+})
 const paymentMethodField = ref(null);
 const props = defineProps({
   editable: {
     type: Boolean,
     required: false,
     default: true,
+  },
+  modelValue: {
+    type: String,
+    required: true
   }
 });
-const emit = defineEmits(["updatePaymentMethod"]);
-
-const onChangeMethod = () => {
-  emit("updatePaymentMethod", selectedPaymentMode.value)
-}
+const emit = defineEmits(["update:model-value"]);
 
 const isValid = () => {
   return paymentMethodField.value.validate();
