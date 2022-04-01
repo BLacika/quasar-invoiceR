@@ -208,7 +208,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { getInvoiceById } from "../../store/invoice";
 import { getPartnersByType } from "../../store/partner";
@@ -236,10 +236,6 @@ const editor = ref("");
 const partner = ref(null);
 const partnerBank = ref(null);
 const newMessage = ref(false);
-
-onMounted(() => {
-  console.log('invoice', invoice)
-})
 
 const addMessage = () => {
   let newMsg = {
