@@ -8,7 +8,7 @@
       "invoiceDate": "2022-01-15",
       "deliveryDate": "2022-01-15",
       "dueDate": "2022-01-25",
-      "paymentTherm": "10",
+      "paymentTherm": 10,
       "paymentMode": "transfer",
       "invoiceBankId": "02d7c709-6188-457c-b8c8-ed158eba05a3",
       "currencyId": "8aef1b83-0494-410a-9506-510a1eedfbdc",
@@ -52,7 +52,7 @@
       "bankAccountIds": [
         "02d7c709-6188-457c-b8c8-ed158eba05a3"
       ],
-      "paymentTherm": "10",
+      "paymentTherm": 10,
       "paymentMethod": "transfer",
       "currencyId": "8aef1b83-0494-410a-9506-510a1eedfbdc",
       "languageId": "92e44249-3eed-4ab0-adf5-0cde86d3de46",
@@ -70,7 +70,7 @@
       "bankAccountIds": [
         "e4e0aa43-3f32-4a72-9f36-bae71d003c4a"
       ],
-      "paymentTherm": "0",
+      "paymentTherm": 0,
       "paymentMethod": "cash",
       "currencyId": "8aef1b83-0494-410a-9506-510a1eedfbdc",
       "languageId": "92e44249-3eed-4ab0-adf5-0cde86d3de46",
