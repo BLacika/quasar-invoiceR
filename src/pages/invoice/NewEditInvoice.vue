@@ -127,6 +127,7 @@
     </div>
     <div class="q-pa-sm shadow-2">
       <invoice-lines
+        :editable="editable"
         :invoiceId="state.id"
         :lines="state.invoiceLines"
         @addNewLine="onAddNewLine($event)"
@@ -134,16 +135,46 @@
       >
       </invoice-lines>
       <div class="row q-gutter-xs q-mt-sm justify-end">
-        <q-card bordered class="col-6">
+        <q-card v-if="state.invoiceLines.length > 0" bordered class="col-6">
           <q-card-section>
-            <rounding
-              :editable="editable"
-              v-model="state.rounding"
-            >
-            </rounding>
+            <div class="row items-center justify-end q-my-sm q-py-sm">
+              <div class="col-3">Net Amount</div>
+              <div class="col-6 text-right">
+                {{ state.netAmount.toLocaleString("hu-HU", currencyOptions) }}
+              </div>
+            </div>
+            <div v-for="tax in state.taxesByLabel" :key="tax.label" class="row items-center justify-end q-my-sm q-py-sm">
+              <div class="col-3">{{ tax.label }}</div>
+              <div class="col-6 text-right">
+                {{ tax.value.toLocaleString("hu-HU", currencyOptions) }}
+              </div>
+            </div>
+            <div class="row items-center justify-end q-my-sm q-py-sm">
+              <div class="col-3">Total Amount</div>
+              <div class="col-6 text-right">
+                {{ state.totalAmount.toLocaleString("hu-HU", currencyOptions) }}
+              </div>
+            </div>
+            <div class="row items-center justify-end q-my-sm q-py-sm">
+              <div class="col-3">Rounding</div>
+              <div class="col-6 text-right">
+                <q-select
+                  dense
+                  :readonly="!editable"
+                  :options="roundings"
+                  v-model="state.rounding"
+                  @update:model-value="onRoundingChanged"
+                />
+              </div>
+            </div>
+            <div class="row items-center justify-end q-my-sm q-py-sm">
+              <div class="col-3"><strong>To be paid</strong></div>
+              <div class="col-6 text-right">
+                {{ state.toBePaid.toLocaleString("hu-HU", currencyOptions) }}
+              </div>
+            </div>
           </q-card-section>
         </q-card>
-
       </div>
     </div>
     <div class="q-pa-sm shadow-2">
@@ -163,7 +194,6 @@ import LanguageSelect from "../../components/LanguageSelect.vue";
 import DateInvoice from "../../components/DateInvoice.vue";
 import PaymentMethod from "../../components/PaymentMethod.vue";
 import InvoiceLines from "../../components/InvoiceLines.vue";
-import Rounding from "../../components/Rounding.vue";
 
 const editable = ref(true);
 const currencies = ref(null);
@@ -179,6 +209,7 @@ const invoiceLines = ref([]);
 const timeStamp = Date.now();
 const formattedString = date.formatDate(timeStamp, "YYYY-MM-DD");
 const terms = [0, 1, 5, 8, 10, 15, 20, 30];
+const roundings = ["None", 0, 1, 5];
 
 const state = reactive({
   id: uuid(),
@@ -193,12 +224,21 @@ const state = reactive({
   netAmount: 0,
   vatAmount: 0,
   totalAmount: 0,
-  rounding: 0,
+  rounding: "None",
   invoiceLines: [],
   paymentTherm: 0,
   dueDate: "",
-  paymentMode: ""
+  paymentMode: "",
+  taxesByLabel: [],
+  toBePaid: 0
 })
+
+const currencyOptions = {
+  style: "currency",
+  currency: "HUF",
+  minimumFractionDigits: 2, 
+  maximumFractionDigits: 2
+}
 
 onMounted(() => {
   currencies.value = getCurrencies();
@@ -222,7 +262,35 @@ const onChangeInvoiceDate = () => {
 
 const onChangeCurrency = () => {
   state.exchangeRate = state.currencyId.rates[0].exchange;
+  currencyOptions.currency = state.currencyId.label;
 };
+
+const onChangePartner = (newValue) => {
+  const partner = JSON.parse(newValue);
+  state.partnerId = partner.id;
+  state.paymentMode = partner.paymentMethod;
+  state.paymentTherm = partner.paymentTherm;
+  onChangeTerm();
+}
+
+const onRoundingChanged = () => {
+  switch (state.rounding) {
+    case "None":
+      state.toBePaid = state.totalAmount;
+      break;
+    case 0:
+      const paid = Math.floor(state.totalAmount / 10) * 10;
+      state.toBePaid = paid;
+      break;
+    case 1:
+      state.toBePaid = Math.floor(state.totalAmount);
+      break;
+    case 5:
+      state.toBePaid = Math.round(state.totalAmount / 5) * 5;
+      break;
+  }
+
+}
 
 const hasAnyError = () => {
   let anyError = false;
@@ -245,6 +313,7 @@ const onEditSave = () => {
 const onAddNewLine = (event) => {
   const newLine = JSON.parse(event);
   state.invoiceLines.push(newLine);
+  calculateAmounts();
 }
 
 const onModifyLine = (event) => {
@@ -252,6 +321,32 @@ const onModifyLine = (event) => {
   const lineIndex = state.invoiceLines.findIndex(l => l.id === modifiedLine.id);
   if (lineIndex >= 0) {
     state.invoiceLines[lineIndex] = modifiedLine;
+  }
+  calculateAmounts();
+}
+
+const calculateAmounts = () => {
+  if (state.invoiceLines.length > 0) {
+    let netAmount = 0;
+    let total = 0;
+    state.invoiceLines.forEach(line => {
+      netAmount += line.netAmount;
+
+      line.taxesIds.forEach(taxesId => {
+        const index = state.taxesByLabel.findIndex(t => t.label === taxesId.label);
+        if (index >= 0) {
+          state.taxesByLabel[index].value += (line["netAmount"] * taxesId["amount"]);
+        } else {
+          state.taxesByLabel.push({label: taxesId["label"], value: line["netAmount"] * taxesId["amount"]});
+        }
+      });
+
+      total += line.total;
+    });
+    state.netAmount = netAmount;
+    state.totalAmount = total;
+    state.vatAmount = state.totalAmount - state.netAmount;
+    onRoundingChanged();
   }
 }
 </script>
