@@ -58,9 +58,17 @@ const props = defineProps({
     required: false,
     default: true,
   },
+  partner: {
+    type: String,
+    required: true
+  },
+  bank: {
+    type: String,
+    required: true
+  }
 });
 
-const emit = defineEmits(["updatePartner", "updateBank"]);
+const emit = defineEmits(["update:partner", "update:bank"]);
 
 const partners = ref(null);
 const partnerSelect = ref(null);
@@ -78,15 +86,15 @@ const onChangePartner = () => {
       ? null
       : selectedPartner.value.bankAccountIds[0];
 
-  updatePartner(selectedPartner);
-  updateBank(selectedBank);
+  updatePartner(selectedPartner.value);
+  updateBank(selectedBank.value.id);
 };
 
 const updatePartner = (val) => {
-  emit("updatePartner", val);
+  emit("update:partner", JSON.stringify(val));
 };
 const updateBank = (val) => {
-  emit("updateBank", val);
+  emit("update:bank", val);
 };
 
 const isValid = () => {
