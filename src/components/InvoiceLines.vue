@@ -14,7 +14,7 @@
   >
     <template v-slot:top>
       <div class="q-gutter-xs">
-        <q-btn color="primary" icon="add" label="Add" @click="onAddBtn" />
+        <q-btn v-if="editable" color="primary" icon="add" label="Add" @click="onAddBtn" />
       </div>
       <q-space />
       <q-select
@@ -143,6 +143,10 @@ const props = defineProps({
   },
   lines: {
     type: Array,
+    required: true
+  },
+  editable: {
+    type: Boolean,
     required: true
   }
 })
