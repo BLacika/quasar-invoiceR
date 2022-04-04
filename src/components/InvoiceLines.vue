@@ -42,6 +42,7 @@
     @onAddNewLine="addNewLine($event)"
     :edit="editLine"
     @onModifyLine="modifyLine($event)"
+    @onDeleteLine="deleteLine($event)"
   >
   </invoice-line-dialog>
 
@@ -150,7 +151,7 @@ const props = defineProps({
     required: true
   }
 })
-const emit = defineEmits(["addNewLine", "modifyLine"])
+const emit = defineEmits(["addNewLine", "modifyLine", "deleteLine"])
 
 const loading = ref(false);
 const filter = ref("");
@@ -211,6 +212,10 @@ const addNewLine = (event) => {
 
 const modifyLine = (event) => {
   emit("modifyLine", event);
+}
+
+const deleteLine = (event) => {
+  emit("deleteLine", event);
 }
 
 </script>

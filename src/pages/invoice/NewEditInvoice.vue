@@ -132,6 +132,7 @@
         :lines="state.invoiceLines"
         @addNewLine="onAddNewLine($event)"
         @modifyLine="onModifyLine($event)"
+        @deleteLine="onDeleteLine($event)"
       >
       </invoice-lines>
       <div class="row q-gutter-xs q-mt-sm justify-end">
@@ -325,8 +326,15 @@ const onModifyLine = (event) => {
   calculateAmounts();
 }
 
+const onDeleteLine = (event) => {
+  const index = state.invoiceLines.findIndex(l => l.id === event);
+  state.invoiceLines.splice(index, 1);
+  calculateAmounts();
+}
+
 const calculateAmounts = () => {
   if (state.invoiceLines.length > 0) {
+    state.taxesByLabel = [];
     let netAmount = 0;
     let total = 0;
     state.invoiceLines.forEach(line => {

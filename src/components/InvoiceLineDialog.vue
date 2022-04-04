@@ -75,16 +75,15 @@
             </tbody>
           </table>
         </div>
-      <pre>{{ state }}</pre>
-
       </q-card-section>
 
       <q-separator />
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn v-if="!edit" flat label="Add" @click="addNewLine" />
-        <q-btn v-if="edit" flat label="Save" @click="modifyLine" />
-        <q-btn flat label="Cancel" @click="showDialog = false" />
+        <q-btn v-if="!edit" flat label="Add" icon="add_circle" color="primary" @click="addNewLine" />
+        <q-btn v-if="edit" flat label="Save" icon="save" color="primary" @click="modifyLine" />
+        <q-btn v-if="edit" flat label="Delete" color="red" icon="delete" @click="deleteLine" />
+        <q-btn flat label="Cancel" icon="cancel" color="secondary" @click="showDialog = false" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -112,7 +111,7 @@ const props = defineProps({
     required: true
   }
 })
-const emit = defineEmits(["update:show", "onAddNewLine", "onModifyLine"])
+const emit = defineEmits(["update:show", "onAddNewLine", "onModifyLine", "onDeleteLine"])
 
 const showDialog = computed({
   get() {
@@ -174,6 +173,11 @@ const addNewLine = () => {
 const modifyLine = () => {
   emit("onModifyLine", JSON.stringify(state.value));
   // edit.value = false;
+  showDialog.value = false;
+}
+
+const deleteLine = () => {
+  emit("onDeleteLine", state.value.id);
   showDialog.value = false;
 }
 </script>
