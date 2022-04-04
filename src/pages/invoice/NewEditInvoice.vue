@@ -136,6 +136,9 @@
       >
       </invoice-lines>
       <div class="row q-gutter-xs q-mt-sm justify-end">
+        <div :class="[state.invoiceLines.lenght > 0 ? 'col-6' : 'col' ]">
+          <q-editor class="fit" v-model="state.notes" min-height="5rem" />
+        </div>
         <q-card v-if="state.invoiceLines.length > 0" bordered class="col-6">
           <q-card-section>
             <div class="row items-center justify-end q-my-sm q-py-sm">
@@ -231,7 +234,8 @@ const state = reactive({
   dueDate: "",
   paymentMode: "",
   taxesByLabel: [],
-  toBePaid: 0
+  toBePaid: 0,
+  notes: ""
 })
 
 const currencyOptions = {
