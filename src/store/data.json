@@ -17,11 +17,14 @@
       "netAmount": 1000,
       "vatAmount": 270,
       "totalAmount": 1270,
+      "toBePaid": 0,
       "rounding": 0,
       "invoiceLines": [
         "dcf59c48-27d6-429f-90f6-b960cbf33a94"
       ],
-      "notes": ""
+      "notes": "",
+      "state": "paid",
+      "messages": []
     }
   ],
   "invoicelines": [
@@ -38,7 +41,6 @@
       "taxAmount": 270,
       "netAmount": 1000,
       "total": 1270,
-      "note": "",
       "productId": "ab528c70-e3c2-446d-9fda-2a4066ac5e8d"
     }
   ],
