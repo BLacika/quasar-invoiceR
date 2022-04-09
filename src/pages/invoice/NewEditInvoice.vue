@@ -33,7 +33,12 @@
       </div>
     </div>
     <div class="q-pa-sm shadow-2">
-      <h4 class="q-px-sm q-py-none q-my-xs">Draft</h4>
+      <div class="row justify-between items-center">
+        <h4 class="q-px-sm q-py-none q-my-xs">Draft</h4>
+        <q-badge>
+          <span class="text-subtitle2 q-px-sm q-py-none q-my-xs">{{ state.state }}</span>
+        </q-badge>
+      </div>
       <div class="row q-gutter-xs">
         <q-card bordered class="col">
           <q-card-section>
