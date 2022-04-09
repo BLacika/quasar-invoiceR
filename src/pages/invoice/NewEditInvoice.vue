@@ -186,6 +186,43 @@
         </q-card>
       </div>
     </div>
+    <div class="q-my-sm q-pa-md" bordered>
+        <p class="text-subtitle1">Messages</p>
+        <q-btn class="q-mb-sm" color="primary" icon="add" label="Add new" size="sm" @click="newMessage = true" />
+        <q-dialog v-model="newMessage">
+          <q-card style="width: 700px; max-width: 80vw;">
+            <q-card-section>
+              <div class="text-h6">Your message</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              <q-editor v-model="editorText" min-height="5rem" />
+            </q-card-section>
+
+            <q-card-actions align="right" class="text-primary">
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn flat label="Add message" v-close-popup @click="addMessage"/>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+        <q-card class="q-mb-sm" bordered v-for="message in state.messages" :key="message.id">
+          <q-card-section horizontal>
+            <q-card-section class="fit">
+              <div class="row justify-between items-center">
+                <p class="q-mb-none">
+                  {{ message.uploaded }} <span>by {{ message.uploader }}</span>
+                </p>
+                  <q-card-actions horizontal class="justify-around q-pa-none">
+                    <q-btn flat round color="primary" icon="reply" />
+                    <q-btn flat round color="red" icon="delete" />
+                    <q-btn flat round color="accent" icon="edit" />
+                  </q-card-actions>
+              </div>
+              <q-card-section v-html="message.content"></q-card-section>
+            </q-card-section>
+          </q-card-section>
+        </q-card>
+      </div>
     <div class="q-pa-sm shadow-2">
       <pre>{{ state }}</pre>
     </div>
@@ -240,7 +277,9 @@ const state = reactive({
   paymentMode: "",
   taxesByLabel: [],
   toBePaid: 0,
-  notes: ""
+  notes: "",
+  messages: [],
+  state: "new"
 })
 
 const currencyOptions = {
@@ -248,6 +287,19 @@ const currencyOptions = {
   currency: "HUF",
   minimumFractionDigits: 2, 
   maximumFractionDigits: 2
+}
+
+const newMessage = ref(false);
+const editorText = ref("");
+const addMessage = () => {
+  const newMsg = {
+    id: uuid(),
+    content: editorText.value,
+    uploader: "Lacika",
+    uploaded: new Date().toLocaleString()
+  }
+  state.messages.unshift(newMsg);
+  editorText.value = "";
 }
 
 onMounted(() => {
