@@ -10,7 +10,6 @@
         :readonly="!props.editable"
         :options="partners"
         v-model="selectedPartner"
-        @update:model-value="onChangePartner"
         :rules="[(val) => !!val || 'Please select a Partner']"
         lazy-rules="ondemand"
       />
@@ -49,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getPartners } from "../store/partner";
 
 const props = defineProps({
@@ -73,29 +72,26 @@ const emit = defineEmits(["update:partner", "update:bank"]);
 const partners = ref(null);
 const partnerSelect = ref(null);
 const bankSelect = ref(null);
-const selectedPartner = ref(null);
-const selectedBank = ref(null);
+const selectedPartner = computed({
+  get() {
+    return props.partner;
+  },
+  set(val) {
+    emit("update:partner", JSON.stringify(val));
+  }
+})
+const selectedBank = computed({
+  get() {
+    return props.bank;
+  },
+  set(val) {
+    emit("update:bank", JSON.stringify(val));
+  }
+})
 
 onMounted(() => {
   partners.value = getPartners();
 });
-
-const onChangePartner = () => {
-  selectedBank.value =
-    selectedPartner.value == null
-      ? null
-      : selectedPartner.value.bankAccountIds[0];
-
-  updatePartner(selectedPartner.value);
-  updateBank(selectedBank.value.id);
-};
-
-const updatePartner = (val) => {
-  emit("update:partner", JSON.stringify(val));
-};
-const updateBank = (val) => {
-  emit("update:bank", val);
-};
 
 const isValid = () => {
   return partnerSelect.value.validate() && bankSelect.value.validate();
