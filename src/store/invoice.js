@@ -23,6 +23,59 @@ export function getInvoiceById(id) {
   }
 }
 
+export function createDraftInvoice(draft) {
+  const inv = JSON.parse(draft);
+  const newInvoice = {
+    id: inv.id,
+    name: inv.name,
+    number: inv.number,
+    partnerId: inv.partnerId.id,
+    invoiceDate: inv.invoiceDate,
+    deliveryDate: inv.deliveryDate,
+    dueDate: inv.dueDate,
+    paymentTherm: inv.paymentTherm,
+    paymentMode: inv.paymentMode,
+    invoiceBankId: inv.invoiceBankId.id,
+    currencyId: inv.currencyId.id,
+    exchangeRate: inv.exchangeRate,
+    invoiceLangId: inv.invoiceLangId.id,
+    netAmount: inv.netAmount,
+    vatAmount: inv.vatAmount,
+    totalAmount: inv.totalAmount,
+    toBePaid: inv.toBePaid,
+    rounding: inv.rounding,
+    notes: inv.notes,
+    state: inv.state,
+    messages: inv.messages,
+    invoiceLines: inv.invoiceLines.length > 0
+      ? inv.invoiceLines.map(l => l.id)
+      : []
+  }
+  console.log('newInvoice', newInvoice)
+  if (inv.invoiceLines.length > 0) {
+    inv.invoiceLines.forEach(line => {
+      const newLine = {
+        id: line.id,
+        invoiceId: line.invoiceId,
+        label: line.label,
+        quantity: line.quantity,
+        uomId: line.uomId.id,
+        unitPrice: line.unitPrice,
+        taxesIds: line.taxesIds.length > 0
+          ? line.taxesIds.map(t => t.id)
+          : [],
+        taxAmount: line.taxAmount,
+        netAmount: line.netAmount,
+        total: line.total,
+        productId: line.productId.id
+      }
+      createInvoiceLine(newLine);
+    });
+  }
+
+  data.invoices.push(JSON.stringify(newInvoice));
+}
+
 function getNextNumber() {
   const invoices = getInvoices();
   const numbers = invoices.map(inv => parseInt(inv.number.slice(-4)));
@@ -62,4 +115,9 @@ export function getInvoiceLineById(id) {
     taxesIds: found.taxesIds.map(id => getTaxById(id)),
     productId:  getProductById(found.productId)
   }
+}
+
+export function createInvoiceLine(line) {
+  console.log('line', line)
+  data.invoicelines.push(JSON.stringify(line));
 }
