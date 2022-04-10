@@ -190,20 +190,22 @@ const onAddBtn = () => {
 };
 
 const handleRowSelect = (event, row, index) => {
-  dialogTitle.value = "Modify line"
-  selectedLine.id = row.id;
-  selectedLine.invoiceId = row.invoiceId;
-  selectedLine.productId = row.productId;
-  selectedLine.label = row.label;
-  selectedLine.quantity = row.quantity;
-  selectedLine.uomId = row.uomId;
-  selectedLine.unitPrice = row.unitPrice;
-  selectedLine.taxesIds = row.taxesIds;
-  selectedLine.taxAmount = row.taxAmount;
-  selectedLine.netAmount = row.netAmount;
-  selectedLine.total = row.total;
-  editLine.value = true;
-  showDialog.value = true;
+  if (props.editable) {
+    dialogTitle.value = "Modify line"
+    selectedLine.id = row.id;
+    selectedLine.invoiceId = row.invoiceId;
+    selectedLine.productId = row.productId;
+    selectedLine.label = row.label;
+    selectedLine.quantity = row.quantity;
+    selectedLine.uomId = row.uomId;
+    selectedLine.unitPrice = row.unitPrice;
+    selectedLine.taxesIds = row.taxesIds;
+    selectedLine.taxAmount = row.taxAmount;
+    selectedLine.netAmount = row.netAmount;
+    selectedLine.total = row.total;
+    editLine.value = true;
+    showDialog.value = true;
+  }
 }
 
 const addNewLine = (event) => {
