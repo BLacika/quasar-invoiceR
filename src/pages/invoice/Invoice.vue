@@ -2,7 +2,7 @@
   <q-page class="q-pa-sm">
     <div class="row q-pa-sm justify-between shadow-2">
       <div class="q-gutter-xs">
-        <q-btn color="primary" icon="add" label="New" />
+        <q-btn color="primary" icon="add" label="New" to="new" />
         <q-btn
           style="background: goldenrod; color: white"
           icon="edit"
@@ -34,7 +34,9 @@
     </div>
     <div class="q-pa-sm shadow-2">
       <div class="row justify-between items-center">
-        <h4 class="q-px-sm q-py-none q-my-xs">Draft</h4>
+        <h4 class="q-px-sm q-py-none q-my-xs">
+          {{ invoice ? invoice.number : "Draft" }}
+        </h4>
         <q-badge>
           <span class="text-subtitle2 q-px-sm q-py-none q-my-xs">{{ state.state }}</span>
         </q-badge>
@@ -48,7 +50,7 @@
               :partner="state.partnerId"
               @update:partner="(newValue) => onChangePartner(newValue)"
               :bank="state.invoiceBankId"
-              @update:bank="(newValue) => state.invoiceBankId = newValue"
+              @update:bank="(newValue) => onChangeBankId(newValue)"
             ></partner-select>
             <language-select
               ref="languageSelect"
@@ -223,15 +225,17 @@
           </q-card-section>
         </q-card>
       </div>
-    <div class="q-pa-sm shadow-2">
+    <!-- <div class="q-pa-sm shadow-2">
       <pre>{{ state }}</pre>
-    </div>
+    </div> -->
   </q-page>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, computed } from "vue";
 import { date } from "quasar";
+import { useRoute } from "vue-router";
+import { createDraftInvoice, getInvoiceById } from "../../store/invoice";
 import { getCurrencies } from "../../store/currency";
 import { v4 as uuid } from "uuid";
 
@@ -241,7 +245,14 @@ import DateInvoice from "../../components/DateInvoice.vue";
 import PaymentMethod from "../../components/PaymentMethod.vue";
 import InvoiceLines from "../../components/InvoiceLines.vue";
 
-const editable = ref(true);
+const route = useRoute();
+const isNewOrId = computed(() => {
+  return route.params.id ? route.params.id : "new";
+});
+const editable = computed(() => isNewOrId.value === "new");
+const invoice = computed(() => {
+  return route.params.id ? getInvoiceById(route.params.id) : null;
+});
 const currencies = ref(null);
 
 const partnerSelect = ref(null);
@@ -258,28 +269,29 @@ const terms = [0, 1, 5, 8, 10, 15, 20, 30];
 const roundings = ["None", 0, 1, 5];
 
 const state = reactive({
-  id: uuid(),
-  name: "",
-  number: "",
-  partnerId: "",
-  invoiceDate: "",
-  invoiceLangId: "",
-  invoiceBankId: "",
-  currencyId: "",
-  exchangeRate: 1,
-  netAmount: 0,
-  vatAmount: 0,
-  totalAmount: 0,
-  rounding: "None",
-  invoiceLines: [],
-  paymentTherm: 0,
-  dueDate: "",
-  paymentMode: "",
+  id: invoice.value ? invoice.value.id : uuid(),
+  name: invoice.value ? invoice.value.name : "",
+  number: invoice.value ? invoice.value.number : "",
+  partnerId: invoice.value ? invoice.value.partnerId : "",
+  invoiceDate: invoice.value ? invoice.value.invoiceDate : "",
+  deliveryDate: invoice.value ? invoice.value.deliveryDate : "",
+  invoiceLangId: invoice.value ? invoice.value.invoiceLangId : "",
+  invoiceBankId: invoice.value ? invoice.value.invoiceBankId : "",
+  currencyId: invoice.value ? invoice.value.currencyId : "",
+  exchangeRate: invoice.value ? invoice.value.exchangeRate : 1,
+  netAmount: invoice.value ? invoice.value.netAmount : 0,
+  vatAmount: invoice.value ? invoice.value.vatAmount : 0,
+  totalAmount: invoice.value ? invoice.value.totalAmount : 0,
+  rounding: invoice.value ? invoice.value.rounding : "None",
+  invoiceLines: invoice.value ? invoice.value.invoiceLines : [],
+  paymentTherm: invoice.value ? invoice.value.paymentTherm : 0,
+  dueDate: invoice.value ? invoice.value.dueDate : "",
+  paymentMode: invoice.value ? invoice.value.paymentMode : "",
   taxesByLabel: [],
-  toBePaid: 0,
-  notes: "",
-  messages: [],
-  state: "new"
+  toBePaid: invoice.value ? invoice.value.toBePaid : 0,
+  notes: invoice.value ? invoice.value.notes : "",
+  messages: invoice.value ? invoice.value.messages : [],
+  state: invoice.value ? invoice.value.state : "new"
 })
 
 const currencyOptions = {
@@ -303,11 +315,15 @@ const addMessage = () => {
 }
 
 onMounted(() => {
-  currencies.value = getCurrencies();
-  state.invoiceDate = formattedString;
-  state.deliveryDate = formattedString;
-  state.currencyId = currencies.value[0];
-  onChangeCurrency();
+  if (invoice.value) {
+    calculateAmounts();
+  } else {
+    currencies.value = getCurrencies();
+    state.invoiceDate = formattedString;
+    state.deliveryDate = formattedString;
+    state.currencyId = currencies.value[0];
+    onChangeCurrency();
+  }
 });
 
 const onChangeTerm = () => {
@@ -329,10 +345,16 @@ const onChangeCurrency = () => {
 
 const onChangePartner = (newValue) => {
   const partner = JSON.parse(newValue);
-  state.partnerId = partner.id;
+  state.partnerId = partner;
+  state.invoiceBankId = partner.bankAccountIds[0];
   state.paymentMode = partner.paymentMethod;
   state.paymentTherm = partner.paymentTherm;
   onChangeTerm();
+}
+
+const onChangeBankId = (newValue) => {
+  const bankId = JSON.parse(newValue);
+  state.invoiceBankId = bankId;
 }
 
 const onRoundingChanged = () => {
@@ -367,8 +389,12 @@ const hasAnyError = () => {
 };
 
 const onEditSave = () => {
+  if (state.state !== "new") return;
+
   if (!hasAnyError()) {
     editable.value = !editable.value;
+
+    createDraftInvoice(JSON.stringify(state));
   }
 };
 
