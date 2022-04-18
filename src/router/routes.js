@@ -9,6 +9,14 @@ const routes = [
       { path: "/invoice/:id", name: "invoice", component: () => import("src/pages/invoice/Invoice.vue") },
     ],
   },
+  {
+    path: "/settings",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { path: "/settings/company", name: "company", component: () => import("src/pages/settings/Company.vue") },
+      { path: "/settings/language", name: "language", component: () => import("src/pages/settings/Language.vue") },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
