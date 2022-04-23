@@ -1,4 +1,18 @@
 {
+  "company": {
+    "name": "My Company Corp.",
+    "shortName": "MyCompany",
+    "addressIds": [
+      "1f923fb9-4170-4dfb-9881-7f6d310d0467"
+    ],
+    "bankAccountIds": [
+      "ba1d62ff-e432-4282-94f4-1dbec43c4734",
+      "d33c76f4-6873-4587-b776-93374e100d46"
+    ],
+    "currencyId": "8aef1b83-0494-410a-9506-510a1eedfbdc",
+    "languageId": "92e44249-3eed-4ab0-adf5-0cde86d3de46",
+    "vatnumber": "26854625-1-14"
+  },
   "invoices": [
     {
       "id": "49b3059b-b099-4883-bc01-bd39afa177ae",
@@ -84,6 +98,20 @@
   ],
   "bankAccounts": [
     {
+      "id": "ba1d62ff-e432-4282-94f4-1dbec43c4734",
+      "accountNumber": "10965588-87612348-1235598",
+      "bank": "Erste Bank",
+      "label": "Erste Bank",
+      "currencyId": "8aef1b83-0494-410a-9506-510a1eedfbdc"
+    },
+    {
+      "id": "d33c76f4-6873-4587-b776-93374e100d46",
+      "accountNumber": "10965588-69552314-55224689",
+      "bank": "Erste Bank",
+      "label": "Erste Bank - EUR",
+      "currencyId": "7a71c0da-059b-4444-8873-f4726fae789c"
+    },
+    {
       "id": "e4e0aa43-3f32-4a72-9f36-bae71d003c4a",
       "accountNumber": "11770000-11223344-66778899",
       "bank": "K&H Bank",
@@ -99,6 +127,15 @@
     }
   ],
   "addresses": [
+    {
+      "id": "1f923fb9-4170-4dfb-9881-7f6d310d0467",
+      "active": true,
+      "street": "Kossuth Lajos utca 8.",
+      "zip": "1989",
+      "city": "Budapest",
+      "country": "Hungary",
+      "type": "main"
+    },
     {
       "id": "dac29e62-73dc-4460-a655-1d90f44438f4",
       "active": true,
