@@ -1,3 +1,6 @@
+:no_entry: [DEPRECATED]
+Because of changing Webpack to Vite, this project will be developed further in another repository!
+
 # Quasar App (invoice-r)
 
 This is one of my hobbyproject, which is unfinished. This is because I noticed
@@ -33,6 +36,3 @@ npm run lint
 ```bash
 quasar build
 ```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
